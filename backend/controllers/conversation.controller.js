@@ -5,7 +5,6 @@ export const createConversation = async (req,res)=>{
     try {
         const {title}= req.body;
         const userId = req.id;
-        console.log(userId)
         if(!title){
             return res.status(400).json({
                 message:"Something is missing",
