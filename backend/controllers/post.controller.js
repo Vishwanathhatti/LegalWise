@@ -276,4 +276,3 @@ export const getTrendingPosts = async (req, res) => {
         res.status(500).json({ message: "Error fetching trending posts", error });
     }
 };
-
