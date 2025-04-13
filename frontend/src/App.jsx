@@ -10,6 +10,9 @@ import { useSelector } from 'react-redux';
 import Profile from './components/pages/Profile';
 import ChatList from './components/pages/ChatList';
 import Dashboard from './components/pages/Dashboard';
+import CommunityDashboard from './components/pages/CommunityDashboard';
+import CommunityBrowse from './components/pages/CommunityBrowse';
+import ViewPostPage from './components/pages/ViewPostPage';
 
 function App() {
   const darkMode = useSelector((state) => state.mode.darkmode);
@@ -33,6 +36,9 @@ function App() {
         <Route path="/chat" element={<ChatList />} />
         <Route path="/chat/:id" element={<ChatLayout />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/community/browse" element={<CommunityBrowse />} />
+        <Route path="/community" element={<CommunityDashboard />} />
+        <Route path="/community/post/:id" element={<ViewPostPage />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </>

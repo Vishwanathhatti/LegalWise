@@ -7,6 +7,8 @@ import "dotenv/config";
 import userRouter from "./routes/user.route.js";
 import conversationRouter from "./routes/conversation.route.js";
 import messageRouter from "./routes/message.route.js";
+import postRouter from "./routes/post.route.js";
+import commentRouter from "./routes/comment.route.js";
 
 const app = express();
 
@@ -21,9 +23,13 @@ const corsOption={
 }
 app.use(cors(corsOption));
 
+
 app.use('/api/user',userRouter)
 app.use('/api/conversation',conversationRouter)
 app.use('/api/conversation', messageRouter)
+// commmunity
+app.use('/api/community/post', postRouter);
+app.use('/api/community/comments', commentRouter ) // Comments from community posts
 
 const Port = process.env.PORT || 5000;
 

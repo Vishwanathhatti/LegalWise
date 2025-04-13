@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 import axios from 'axios';
 import { useGetAllUserConversations } from '@/hooks/useGetAllUserConversations';
 import { ArrowRight, MessageSquareIcon, PlusCircle } from 'lucide-react';
+import { Logout } from './auth/Logout';
 const ChatList = () => {
     useGetAllUserConversations();
     const allConversations = useSelector(store => store.conversation.allUserConversation);
@@ -35,7 +36,7 @@ const ChatList = () => {
             }
             const token = user.token;
             const response = await axios.post(
-                `http://localhost:5000/api/conversation/create`, formData,
+                `${import.meta.env.VITE_CONVERSATION_API_ENDPOINT}/create`, formData,
                 {
                     headers: { authorization: token },
                     withCredentials: true,
@@ -46,6 +47,11 @@ const ChatList = () => {
                 navigate(`/chat/${response.data.conversation._id}`);
                 window.location.reload()
             }
+
+            if (response.status === 401) {
+                Logout(dispatch, navigate, user); // handle logout
+            }
+
         } catch (error) {
             console.log(error)
             toast.error(error.response?.data?.message);
@@ -65,47 +71,47 @@ const ChatList = () => {
                     </div>
 
                     <div>
-                               <Dialog open={open} onOpenChange={setOpen}>
-                             <DialogTrigger asChild>
-                                 <Button><PlusCircle/> New Conversation</Button>
-                             </DialogTrigger>
-                             <DialogContent>
-                                 <DialogHeader>
-                                     <DialogTitle>Create a New Conversation</DialogTitle>
-                                 </DialogHeader>
-                                 <Input 
-                                     type='text' 
-                                     placeholder='Enter conversation title' 
-                                     value={title} 
-                                     onChange={(e) => setTitle(e.target.value)}
-                                 />
-                                 <Button className='mt-4' onClick={handleCreateConversation}>Create</Button>
-                             </DialogContent>
-                         </Dialog>
+                        <Dialog open={open} onOpenChange={setOpen}>
+                            <DialogTrigger asChild>
+                                <Button><PlusCircle /> New Conversation</Button>
+                            </DialogTrigger>
+                            <DialogContent>
+                                <DialogHeader>
+                                    <DialogTitle>Create a New Conversation</DialogTitle>
+                                </DialogHeader>
+                                <Input
+                                    type='text'
+                                    placeholder='Enter conversation title'
+                                    value={title}
+                                    onChange={(e) => setTitle(e.target.value)}
+                                />
+                                <Button className='mt-4' onClick={handleCreateConversation}>Create</Button>
+                            </DialogContent>
+                        </Dialog>
                     </div>
 
                 </div>
 
-               <div className='w-full flex flex-wrap justify-center p-3 gap-5 items-center'>
-                         {sortedConversations && sortedConversations.length === 0 && (
-                             <h1 className='w-full text-2xl font-bold text-center'>No Conversations Found</h1>
-                         )}
-                         {sortedConversations && sortedConversations.map((conversation) => (
-                             <Link className='w-full flex bg-[#F1F5F9] dark:bg-[#292929] rounded-xl justify-between items-end border p-5' key={conversation._id} to={`/chat/${conversation._id}`}>
-                                <div className='flex flex-col gap-3'>
-                                    <h1 className='text-2xl font-semibold flex items-center gap-2'><MessageSquareIcon/> {conversation.title}</h1>
-                                    <p>{formatDate(conversation.createdAt)}</p>
-                                </div>
+                <div className='w-full flex flex-wrap justify-center p-3 gap-5 items-center'>
+                    {sortedConversations && sortedConversations.length === 0 && (
+                        <h1 className='w-full text-2xl font-bold text-center'>No Conversations Found</h1>
+                    )}
+                    {sortedConversations && sortedConversations.map((conversation) => (
+                        <Link className='w-full flex bg-[#F1F5F9] dark:bg-[#292929] rounded-xl justify-between items-end border p-5' key={conversation._id} to={`/chat/${conversation._id}`}>
+                            <div className='flex flex-col gap-3'>
+                                <h1 className='text-2xl font-semibold flex items-center gap-2'><MessageSquareIcon /> {conversation.title}</h1>
+                                <p>{formatDate(conversation.createdAt)}</p>
+                            </div>
 
-                                <Link to={`${conversation._id}`}>
+                            <Link to={`${conversation._id}`}>
                                 <Button variant="link">
-                                    Continue Conversation <ArrowRight/>
+                                    Continue Conversation <ArrowRight />
                                 </Button>
-                                </Link>
+                            </Link>
 
-                             </Link>
-                         ))}
-                     </div>
+                        </Link>
+                    ))}
+                </div>
 
 
             </div>

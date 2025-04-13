@@ -15,7 +15,7 @@ const useGetCurrentConversation = (conversationId) => {
         const fetchCurrentConversation = async () => {
             try {
                 const response = await axios.get(
-                    `http://localhost:5000/api/conversation/get/${conversationId}`,
+                    `${import.meta.env.VITE_CONVERSATION_API_ENDPOINT}/get/${conversationId}`,
                     {
                         headers: { authorization: token },
                         withCredentials: true,

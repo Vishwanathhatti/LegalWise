@@ -11,7 +11,7 @@ export const useGetAllUserConversations = () => {
     useEffect(() => {
         const fetchAllUserConversations = async () => {
             try {
-                const response = await axios.get('http://localhost:5000/api/conversation/get', { headers: { authorization: token }, withCredentials: true });
+                const response = await axios.get(`${import.meta.env.VITE_CONVERSATION_API_ENDPOINT}/get`, { headers: { authorization: token }, withCredentials: true });
                 if (response.data.success) {
                     dispatch(setAllUserConversation(response.data.allConversation));
                 }

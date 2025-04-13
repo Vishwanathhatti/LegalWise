@@ -3,6 +3,8 @@ import storage from "redux-persist/lib/storage";
 import { FLUSH, PAUSE, PERSIST, persistReducer as persistReducerFunction, PURGE, REGISTER, REHYDRATE } from "redux-persist";
 import authSlice from "./authSlice.js";
 import modeSlice from "./modeSlice.js";
+import communityPostSlice from "./communityPostSlice.js";
+import communityCommentSlice from "./communityCommentSlice.js";
 import conversationSlice from "./conversationSlice.js";
 
 const persistConfig={
@@ -15,6 +17,8 @@ const rootReducers = combineReducers({
     auth: authSlice,
     mode: modeSlice,
     conversation: conversationSlice,
+    communityPost: communityPostSlice,
+    communityComment: communityCommentSlice
 })
 
 const persistedReducer=  persistReducerFunction(persistConfig,rootReducers)

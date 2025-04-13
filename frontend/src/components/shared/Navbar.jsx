@@ -57,7 +57,7 @@ const Navbar = () => {
                     <Link to="/profile">Profile Settings</Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => { Logout(dispatch, navigate) }}>
+                  <DropdownMenuItem onClick={() => { Logout(dispatch, navigate,user) }}>
                     Sign Out
                   </DropdownMenuItem>
                 </DropdownMenuContent>

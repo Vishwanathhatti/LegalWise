@@ -37,7 +37,7 @@ const Signup = () => {
         }
 
         try {
-          const response = await axios.post('http://localhost:5000/api/user/register', formData)
+          const response = await axios.post(`${import.meta.env.VITE_USER_API_ENDPOINT}/register`, formData)
           if(response.data.success == true){
             toast.success(response.data.message)
             navigate('/login')

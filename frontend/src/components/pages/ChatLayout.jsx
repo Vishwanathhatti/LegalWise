@@ -56,7 +56,7 @@ const ChatSidebar = () => {
             }
             const token = user.token;
             const response = await axios.post(
-                `http://localhost:5000/api/conversation/create`, formData,
+                `${import.meta.env.VITE_CONVERSATION_API_ENDPOINT}/create`, formData,
                 {
                     headers: { authorization: token },
                     withCredentials: true,
@@ -67,6 +67,11 @@ const ChatSidebar = () => {
                 navigate(`/chat/${response.data.conversation._id}`);
                 window.location.reload()
             }
+
+            if (response.status === 401) {
+                Logout(dispatch,navigate,user); // handle logout
+              }
+
         } catch (error) {
             console.log(error)
             toast.error(error.response?.data?.message);
@@ -163,6 +168,12 @@ const ChatLayout = () => {
     }, [chats]);
 
 
+    function removeHtmlBackticks(input) {
+        // Remove ```html and ``` from the string
+        return input.replace(/```html\s*|```/g, '').trim();
+      }
+      
+
     const toggleTheme = () => {
         dispatch(setDarkmode(!darkMode));
     };
@@ -178,7 +189,7 @@ const ChatLayout = () => {
         try {
             const formData = { content: input.content };
             const response = await axios.post(
-                `http://localhost:5000/api/conversation/${conversationId}`,
+                `${import.meta.env.VITE_CONVERSATION_API_ENDPOINT}/${conversationId}`,
                 formData,
                 {
                     headers: { authorization: token },
@@ -191,6 +202,10 @@ const ChatLayout = () => {
                 setTimeout(() => {
                     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
                 }, 100);
+
+                if (response.status === 401) {
+                    Logout(dispatch,navigate,user); // handle logout
+                  }
 
             }
         } catch (error) {
@@ -250,7 +265,7 @@ const ChatLayout = () => {
                                         <Link to="/profile">Profile Settings</Link>
                                     </DropdownMenuItem>
                                     <DropdownMenuSeparator />
-                                    <DropdownMenuItem onClick={() => { Logout(dispatch, navigate) }}>
+                                    <DropdownMenuItem onClick={() => { Logout(dispatch, navigate, user) }}>
                                         Sign Out
                                     </DropdownMenuItem>
                                 </DropdownMenuContent>
@@ -265,16 +280,11 @@ const ChatLayout = () => {
                                         ? "bg-[#6342eb] text-white"
                                         : "bg-[#F1F5F9] text-black dark:bg-[#292929] dark:text-white"
                                         }`}
-                                    dangerouslySetInnerHTML={{ __html: message.content }}
+                                    dangerouslySetInnerHTML={{ __html: removeHtmlBackticks(message.content) }}
                                 ></p>
                             </div>
                         ))}
-                        {/* <Button onClick={()=>{
-                                            setTimeout(() => {
-                                                messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-                                            }, 100);
-                        }} className="absolute bottom-20 right-5 rounded-full p-3 bg-[#6342eb] text-white hover:text-black"><ArrowDown />
-                        </Button> */}
+
                     </div>
                     <div className="border-t p-4">
                         <form

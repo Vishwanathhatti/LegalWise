@@ -16,6 +16,7 @@ import {
     LogOut,
     Sun,
     Moon,
+    Clock,
 } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { useState } from "react"
@@ -29,11 +30,16 @@ import { Input } from '../ui/input'
 import axios from 'axios'
 import { toast } from 'sonner'
 import { setDarkmode } from '@/redux/modeSlice'
+import { useGetAllUserPosts } from '@/hooks/useGetAllUserPosts'
 
 const Dashboard = () => {
     useGetAllUserConversations();
+    useGetAllUserPosts();
+    const user = useSelector(store => store.auth.user)
     const userData = useSelector(store => store.auth.user)
     const allConversations = useSelector(store => store.conversation.allUserConversation);
+    const allUserPosts = useSelector(store=> store.communityPost.allUserPosts)
+    // console.log(allUserPosts)
     const [sidebarOpen, setSidebarOpen] = useState(false)
     const dispatch = useDispatch()
     const navigate = useNavigate()
@@ -51,7 +57,7 @@ const Dashboard = () => {
             }
             const token = userData.token;
             const response = await axios.post(
-                `http://localhost:5000/api/conversation/create`, formData,
+                `${import.meta.env.VITE_CONVERSATION_API_ENDPOINT}/create`, formData,
                 {
                     headers: { authorization: token },
                     withCredentials: true,
@@ -62,6 +68,11 @@ const Dashboard = () => {
                 navigate(`/chat/${response.data.conversation._id}`);
                 window.location.reload()
             }
+
+            if (response.status === 401) {
+                Logout(dispatch,navigate,user); // handle logout
+              }
+
         } catch (error) {
             console.log(error)
             toast.error(error.response?.data?.message);
@@ -102,7 +113,7 @@ const Dashboard = () => {
                             Conversations
                         </Link>
                         <Link
-                            to="/community"
+                            to="/community/browse"
                             className="flex items-center gap-2 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
                         >
                             <Book className="h-5 w-5" />
@@ -124,7 +135,7 @@ const Dashboard = () => {
                         </Link>
 
                         <Link
-                            onClick={() => Logout(dispatch, navigate)}
+                            onClick={() => Logout(dispatch, navigate, user)}
                             className="flex items-center gap-2 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
                         >
                             <LogOut className="h-5 w-5" />
@@ -181,14 +192,14 @@ const Dashboard = () => {
                                 <FileText className="h-4 w-4 text-muted-foreground" />
                             </CardHeader>
                             <CardContent>
-                                <div className="text-2xl font-bold">Coming soon</div>
+                                <div className="text-2xl font-bold">{allUserPosts.length}</div>
                                 {/* <p className="text-xs text-muted-foreground">+1 from last week</p> */}
                             </CardContent>
                         </Card>
                         <Card className="sm:col-span-2 lg:col-span-1">
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                                 <CardTitle className="text-sm font-medium">Last Login</CardTitle>
-                                <Scale className="h-4 w-4 text-muted-foreground" />
+                                <Clock className="h-4 w-4 text-muted-foreground" />
                             </CardHeader>
                             <CardContent>
                                 <div className="text-2xl font-bold">{new Date(userData.lastLogin).toLocaleDateString()}</div>

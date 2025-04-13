@@ -8,7 +8,7 @@ export const createPost = async (req, res) => {
 
     try {
         const {title, description} = req.body;
-        const userId = req.userId;
+        const userId = req.id;
 
         if (!title || !description) {
             return res.status(400).json({
@@ -62,12 +62,12 @@ export const createPost = async (req, res) => {
 export const getAllPosts = async (req, res) => {
     try {
         
-        const userId = req.userId;
-        const posts = await postModel.find({ author: { $ne: userId } })
-        .populate("user", "name email")
+        const userId = req.id;
+        const posts = await postModel.find({ author:  { $ne: userId }  })
+        .populate("author", "name email")
         .populate({
             path: "comments",
-            populate: { path: "user", select: "name email" }
+            populate: { path: "author", select: "name email" }
         })
         .populate("likes", "name");
 
@@ -89,15 +89,14 @@ export const getAllPosts = async (req, res) => {
 
 export const addLike = async (req, res) => {
     try {
-        const { postId } = req.params;
-        const userId = req.userId;
+        const postId  = req.params.id;
+        const userId = req.id;
 
         if (!userId) {
             return res.status(400).json({ success: false, message: "User ID is required in headers" });
         }
 
         const user = await userModel.findById(userId);
-
         if (!user) {
             return res.status(400).json({
                 message: "User not found",
@@ -127,8 +126,8 @@ export const addLike = async (req, res) => {
 
 export const removeLike = async (req, res) => {
     try {
-        const { postId } = req.params;
-        const userId = req.userId; 
+        const postId  = req.params.id;
+        const userId = req.id; 
 
         if (!userId) {
             return res.status(400).json({ success: false, message: "User ID is required in headers" });
@@ -156,7 +155,7 @@ export const removeLike = async (req, res) => {
 export const deletePost = async (req, res) => {
     try {
         const { postId } = req.params;
-        const userId = req.userId; 
+        const userId = req.id; 
 
         if (!userId) {
             return res.status(400).json({ success: false, message: "User ID is required in headers" });
@@ -186,8 +185,8 @@ export const deletePost = async (req, res) => {
 
 export const getUserPosts = async (req, res) => {
     try {
-        const userId = req.userId;
-
+        const userId = req.id;
+        
         if (!userId) {
             return res.status(400).json({ message: "User ID is required in headers" });
         }
@@ -200,7 +199,10 @@ export const getUserPosts = async (req, res) => {
             })
             .sort({ createdAt: -1 }); 
 
-        res.status(200).json(userPosts);
+        res.status(200).json({
+            success:true,
+            userPosts
+        });
     } catch (error) {
         res.status(500).json({ message: "Error fetching user posts", error });
     }
@@ -211,10 +213,13 @@ export const getUserPosts = async (req, res) => {
 
 export const getSinglePost = async (req, res) => {
     try {
-        const { postId } = req.params; 
+        const postId  = req.params.id; 
 
         if (!postId) {
-            return res.status(400).json({ message: "Post ID is required" });
+            return res.status(400).json({
+                success: false,
+                message: "Post ID is required"
+             });
         }
 
         const post = await postModel.findById(postId)
@@ -225,12 +230,18 @@ export const getSinglePost = async (req, res) => {
             });
 
         if (!post) {
-            return res.status(404).json({ message: "Post not found" });
+            return res.status(404).json({ 
+                success: false,
+                message: "Post not found" 
+            });
         }
 
-        res.status(200).json(post);
+        res.status(200).json({
+            success: true,
+            post
+        });
     } catch (error) {
-        res.status(500).json({ message: "Error fetching post", error });
+        res.status(500).json({ message: "Error fetching post", error, success: false });
     }
 };
 
@@ -238,19 +249,18 @@ export const getSinglePost = async (req, res) => {
 
 
 //search post
-
 export const searchPosts = async (req, res) => {
     try {
-        const { query } = req.params; 
+        const { keyword } = req.query; // Get the search keyword from request query parameters
 
-        if (!query) {
-            return res.status(400).json({ message: "Search query is required" });
+        if (!keyword) {
+            return res.status(400).json({ message: "Search keyword is required" });
         }
 
         const posts = await postModel.find({
             $or: [
-                { title: { $regex: query, $options: "i" } }, 
-                { description: { $regex: query, $options: "i" } }
+                { title: { $regex: keyword, $options: "i" } }, 
+                { description: { $regex: keyword, $options: "i" } }
             ]
         }).populate("author", "name");
 
@@ -259,7 +269,6 @@ export const searchPosts = async (req, res) => {
         res.status(500).json({ message: "Error searching posts", error });
     }
 };
-
 
 
 // trending posts
@@ -276,3 +285,33 @@ export const getTrendingPosts = async (req, res) => {
         res.status(500).json({ message: "Error fetching trending posts", error });
     }
 };
+
+
+// Get all liked posts
+
+export const getLikedPosts = async (req, res) => {
+    try {
+        const userId = req.id; // Get userId from headers
+
+        if (!userId) {
+            return res.status(400).json({ message: "User ID is required" });
+        }
+        
+        // Find all posts where the user has liked them
+        const likedPosts = await postModel.find({ likes: [userId] })
+            .populate("author", "name") // Populate author details
+            .sort({ createdAt: -1 }); // Sort by newest first
+
+        res.status(200).json({
+            success: true,
+            likedPosts
+        });
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({ message: "Error fetching liked posts", error });
+    }
+};
+
+
+// Create a function to update a post
+

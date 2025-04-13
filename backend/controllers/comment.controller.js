@@ -3,13 +3,58 @@ import commentModel from "../models/comment.model.js";
 import userModel from "../models/user.model.js"; 
 
 
+
+//Get post specific comments
+
+export const getPostComments = async (req, res) => {
+
+    try {
+        
+        const userId= req.id;
+        const postId = req.params.id;
+
+        if (!userId) {
+            return res.status(400).json({ success: false, message: "User ID is required" });
+        }
+
+        const user = await userModel.findById(userId);
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
+
+        const post = await postModel.findById(postId)
+        .populate("author", "name email")
+        .populate({
+            path: "comments",
+            populate: { path: "author", select: "name email" }
+        })
+        .populate("likes", "name");
+
+        if (!post) {
+            return res.status(404).json({ success: false, message: "Post not found" });
+        }
+
+        res.status(200).json({ success: true, comments: post });
+
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+             success: false, 
+             message: "Error fetching comments"
+            
+            });
+    }
+
+}
+
+
 // add comment
 export const addComment = async (req, res) => {
     try {
-        const { postId } = req.params.id;
-        const userId = req.userId;
+        const  postId  = req.params.id;
+        const userId = req.id;
         const { text } = req.body;
-
         if (!userId) {
             return res.status(400).json({ success: false, message: "User ID is required in headers" });
         }
@@ -43,8 +88,8 @@ export const addComment = async (req, res) => {
 // like a comment
 export const likeComment = async (req, res) => {
     try {
-        const { commentId } = req.params;
-        const userId = req.userId;
+        const commentId  = req.params.id;
+        const userId = req.id;
 
         if (!userId) {
             return res.status(400).json({ success: false, message: "User ID is required in headers" });
@@ -76,8 +121,8 @@ export const likeComment = async (req, res) => {
 // remove like from a comment
 export const removeLikeFromComment = async (req, res) => {
     try {
-        const { commentId } = req.params;
-        const userId = req.userId;
+        const commentId  = req.params.id;
+        const userId = req.id;
 
         if (!userId) {
             return res.status(400).json({ success: false, message: "User ID is required in headers" });
@@ -109,8 +154,8 @@ export const removeLikeFromComment = async (req, res) => {
 // delete own comment
 export const deleteComment = async (req, res) => {
     try {
-        const { commentId } = req.params;
-        const userId = req.userId;
+        const commentId  = req.params.id;
+        const userId = req.id;
 
         if (!userId) {
             return res.status(400).json({ success: false, message: "User ID is required in headers" });
@@ -136,5 +181,34 @@ export const deleteComment = async (req, res) => {
         res.status(200).json({ success: true, message: "Comment deleted successfully" });
     } catch (error) {
         res.status(500).json({ success: false, message: "Error deleting comment", error: error.message });
+    }
+};
+
+// function to get all comments of a user
+export const getUserComments = async (req, res) => {
+    try {
+        const userId = req.id; // Get userId from headers
+
+        if (!userId) {
+            return res.status(400).json({ message: "User ID is required in headers" });
+        }
+
+        // Check if user exists
+        const userExists = await userModel.findById(userId);
+        if (!userExists) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        // Find all comments made by the user
+        const userComments = await commentModel.find({ author: userId })
+            .populate("post", "title") // Populate post details
+            .sort({ createdAt: -1 }); // Sort by newest first
+
+        res.status(200).json({
+            success:true,
+            userComments
+        });
+    } catch (error) {
+        res.status(500).json({ message: "Error fetching user comments", error });
     }
 };
