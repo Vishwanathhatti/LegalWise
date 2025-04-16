@@ -77,11 +77,11 @@ const CommunityBrowse = () => {
 
             }
 
-            if (response.status === 401) {
-                Logout(dispatch, navigate, user); // handle logout
-            }
         } catch (error) {
-            
+            if (error.response.status === 401) {
+                await Logout(dispatch, navigate, user); // handle logout
+                return toast.error('Session expired. Please log in again.');
+            }
         }}
     })
 
@@ -117,13 +117,12 @@ const CommunityBrowse = () => {
 
                 }
 
-                if (response.status === 401) {
-                    Logout(dispatch, navigate, user); // handle logout
-                }
-
-
             } catch (error) {
                 console.log(error)
+                if (error.response.status === 401) {
+                    await Logout(dispatch, navigate, user); // handle logout
+                    return toast.error('Session expired. Please log in again.');
+                }
                 toast.error(error?.response?.data?.message || 'Failed to fetch posts')
             }
         }
@@ -148,16 +147,16 @@ const CommunityBrowse = () => {
                     description: "",
                 })
 
-                if (response.status === 401) {
-                    Logout(dispatch,navigate,user); // handle logout
-                  }
-
                 navigate("/community")
                 window.location.reload()
 
             }
 
         } catch (error) {
+            if (error.response.status === 401) {
+                await Logout(dispatch, navigate, user); // handle logout
+                return toast.error('Session expired. Please log in again.');
+            }
             console.log(error.response)
             toast.error(error?.response?.data?.message || "Something went wrong")
         }

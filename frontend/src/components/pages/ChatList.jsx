@@ -54,6 +54,10 @@ const ChatList = () => {
 
         } catch (error) {
             console.log(error)
+            if (error.response.status === 401) {
+                await Logout(dispatch, navigate, user); // handle logout
+                return toast.error('Session expired. Please log in again.');
+            }
             toast.error(error.response?.data?.message);
         }
     }

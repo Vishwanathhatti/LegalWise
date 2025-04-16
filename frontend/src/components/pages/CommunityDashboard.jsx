@@ -101,16 +101,16 @@ const CommunityDashboard = () => {
                     description: "",
                 })
 
-                if (response.status === 401) {
-                    Logout(dispatch, navigate, user); // handle logout
-                }
-
                 navigate("/community")
                 window.location.reload()
             }
 
         } catch (error) {
             console.log(error.response)
+                            if (error.response.status === 401) {
+                                await Logout(dispatch, navigate, user); // handle logout
+                                return toast.error('Session expired. Please log in again.');
+                            }
             toast.error(error?.response?.data?.message || "Something went wrong")
         }
     }
