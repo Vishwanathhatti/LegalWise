@@ -16,8 +16,6 @@ LegalWise is a comprehensive platform designed to streamline legal processes, fa
   - [Message Routes](#message-routes)
   - [Post Routes](#post-routes)
   - [Comment Routes](#comment-routes)
-- [Contributing](#contributing)
-- [License](#license)
 
 ---
 
@@ -253,18 +251,7 @@ LegalWise/
 
 ---
 
-## Contributing
 
-We welcome contributions! Please follow these steps:
-1. Fork the repository.
-2. Create a new branch for your feature or bug fix.
-3. Commit your changes and push them to your fork.
-4. Submit a pull request.
-
----
-
-
----
 
 ## Contact
 

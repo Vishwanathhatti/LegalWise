@@ -298,7 +298,7 @@ export const getLikedPosts = async (req, res) => {
         }
         
         // Find all posts where the user has liked them
-        const likedPosts = await postModel.find({ likes: [userId] })
+        const likedPosts = await postModel.find({ likes: { $in: [userId] } })
             .populate("author", "name") // Populate author details
             .sort({ createdAt: -1 }); // Sort by newest first
 
