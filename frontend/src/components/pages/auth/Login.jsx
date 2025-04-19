@@ -10,6 +10,16 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setUser } from '@/redux/authSlice';
 import platform from 'platform';
 
+// ShadCN Dialog
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+
 const Login = () => {
   const user = useSelector((store) => store.auth.user);
   const [loading, setLoading] = useState(false);
@@ -19,22 +29,21 @@ const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState('');
+  const [forgotLoading, setForgotLoading] = useState(false);
+
   const [device, setDevice] = useState({
     deviceId: '',
     deviceInfo: '',
   });
 
-  // Redirect if user already logged in
   useEffect(() => {
-    if (user) {
-      navigate('/');
-    }
+    if (user) navigate('/');
   }, [user, navigate]);
 
-  // Detect device info on mount
   useEffect(() => {
     const storedId = localStorage.getItem('deviceId') || crypto.randomUUID();
-
     if (!localStorage.getItem('deviceId')) {
       localStorage.setItem('deviceId', storedId);
     }
@@ -43,7 +52,7 @@ const Login = () => {
 
     setDevice({
       deviceId: storedId,
-      deviceInfo: deviceInfo,
+      deviceInfo,
     });
   }, []);
 
@@ -51,11 +60,10 @@ const Login = () => {
     e.preventDefault();
     try {
       setLoading(true);
-
       const formData = {
         email,
         password,
-        deviceId: device.deviceId,        // ✅ match backend key
+        deviceId: device.deviceId,
         deviceInfo: device.deviceInfo,
       };
 
@@ -78,6 +86,30 @@ const Login = () => {
     }
   };
 
+  const handleForgotPassword = async () => {
+    if (!forgotEmail) {
+      toast.error('Email is required');
+      return;
+    }
+
+    try {
+      setForgotLoading(true);
+      const res = await axios.post(
+        `${import.meta.env.VITE_USER_API_ENDPOINT}/forgot-password`,
+        { email: forgotEmail }
+      );
+
+      toast.success(res.data.message);
+      setDialogOpen(false);
+      setForgotEmail('');
+    } catch (error) {
+      console.error(error);
+      toast.error(error.response?.data?.message || 'Failed to send reset link');
+    } finally {
+      setForgotLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-accent to-background p-4">
       <div className="w-full max-w-md space-y-8 animate-float">
@@ -85,6 +117,7 @@ const Login = () => {
           <h1 className="text-4xl font-bold tracking-tight">Welcome back</h1>
           <p className="text-gray-500">Please enter your details to sign in</p>
         </div>
+
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
@@ -130,12 +163,42 @@ const Login = () => {
           </div>
 
           <div className="flex items-center justify-end">
-            <Link
-              to="/forgot-password"
-              className="text-sm text-primary hover:underline transition-all text-[#6342eb]"
-            >
-              Forgot password?
-            </Link>
+            {/* DialogTrigger wraps the link */}
+            <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+              <DialogTrigger asChild>
+                <button
+                  type="button"
+                  className="text-sm text-[#6342eb] hover:underline transition-all"
+                >
+                  Forgot password?
+                </button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Reset Password</DialogTitle>
+                  <DialogDescription>
+                    Enter your email to receive a password reset link.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <Label htmlFor="forgot-email">Email</Label>
+                  <Input
+                    id="forgot-email"
+                    type="email"
+                    placeholder="Enter your email"
+                    value={forgotEmail}
+                    onChange={(e) => setForgotEmail(e.target.value)}
+                  />
+                  <Button
+                    className="w-full bg-[#6342eb] hover:bg-[#927bef] text-white"
+                    onClick={handleForgotPassword}
+                    disabled={forgotLoading}
+                  >
+                    {forgotLoading ? 'Sending...' : 'Send Reset Link'}
+                  </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
           </div>
 
           <Button

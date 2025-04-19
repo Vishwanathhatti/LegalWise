@@ -108,7 +108,7 @@ const ChatSidebar = () => {
 
                     <div className="space-y-2 ">
                         <Link to="/community" className="space-y-2 hover:bg-black">
-                            <Button  variant="outline" className="w-full justify-start text-left font-semibold "><Users/>Community</Button>
+                            <Button variant="outline" className="w-full justify-start text-left font-semibold "><Users />Community</Button>
                         </Link>
                         <div className="text-xs font-semibold text-muted-foreground">
                             Recent Chats
@@ -172,8 +172,8 @@ const ChatLayout = () => {
     function removeHtmlBackticks(input) {
         // Remove ```html and ``` from the string
         return input.replace(/```html\s*|```/g, '').trim();
-      }
-      
+    }
+
 
     const toggleTheme = () => {
         dispatch(setDarkmode(!darkMode));
@@ -199,7 +199,7 @@ const ChatLayout = () => {
             );
             if (response.data.success) {
                 setLocalMessages((prev) => [...prev, response.data.aiMessage])
-                setInput({content:''});
+                setInput({ content: '' });
                 setTimeout(() => {
                     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
                 }, 100);
@@ -212,7 +212,7 @@ const ChatLayout = () => {
                 return toast.error('Session expired. Please log in again.');
             }
             toast.error(error.response?.data?.message || error.message);
-        }finally{
+        } finally {
             setLoading(false)
         }
     };
@@ -260,9 +260,18 @@ const ChatLayout = () => {
                                     </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end">
-                                <DropdownMenuItem asChild>
+                                    <DropdownMenuItem asChild>
                                         <Link to="/dashboard">Dashboard</Link>
                                     </DropdownMenuItem>
+
+                                    <DropdownMenuItem asChild>
+                                        <Link to="/chat">Chatbot</Link>
+                                    </DropdownMenuItem>
+
+                                    <DropdownMenuItem asChild>
+                                        <Link to="/community/browse">Community</Link>
+                                    </DropdownMenuItem>
+
                                     <DropdownMenuItem asChild>
                                         <Link to="/profile">Profile Settings</Link>
                                     </DropdownMenuItem>
@@ -302,12 +311,12 @@ const ChatLayout = () => {
                                 autoComplete="off"
                             />
                             {
-                                loading? (<Button type="submit" size="icon" className="bg-[#6342eb] hover:bg-[#876bf7]">
+                                loading ? (<Button type="submit" size="icon" className="bg-[#6342eb] hover:bg-[#876bf7]">
                                     <Loader2 className="h-4 w-4 text-white animate-spin transition-all" />
-                                </Button>):
-                                (<Button type="disable" size="icon" className="bg-[#6342eb] hover:bg-[#876bf7]">
-                                    <Send className="h-4 w-4 text-white" />
-                                </Button>)
+                                </Button>) :
+                                    (<Button type="disable" size="icon" className="bg-[#6342eb] hover:bg-[#876bf7]">
+                                        <Send className="h-4 w-4 text-white" />
+                                    </Button>)
                             }
 
                         </form>

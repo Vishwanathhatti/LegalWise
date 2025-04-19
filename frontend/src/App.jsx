@@ -13,6 +13,7 @@ import Dashboard from './components/pages/Dashboard';
 import CommunityDashboard from './components/pages/CommunityDashboard';
 import CommunityBrowse from './components/pages/CommunityBrowse';
 import ViewPostPage from './components/pages/ViewPostPage';
+import ResetPassword from './components/pages/auth/ResetPassword';
 
 function App() {
   const darkMode = useSelector((state) => state.mode.darkmode);
@@ -39,6 +40,7 @@ function App() {
         <Route path="/community/browse" element={<CommunityBrowse />} />
         <Route path="/community" element={<CommunityDashboard />} />
         <Route path="/community/post/:id" element={<ViewPostPage />} />
+        <Route path="/reset-password/:id" element={<ResetPassword />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </>

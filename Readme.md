@@ -1,22 +1,125 @@
-# LegalWise API Documentation
+# LegalWise
 
-## Overview
-This document provides an overview of the API endpoints available in the LegalWise project, including their descriptions, required data, and status codes.
+LegalWise is a comprehensive platform designed to streamline legal processes, facilitate community discussions, and provide AI-powered chatbot assistance for legal queries. The platform includes features like user authentication, community posts, conversations, and real-time chat functionality.
 
 ---
 
 ## Table of Contents
-- [User Routes](#user-routes)
-- [Conversation Routes](#conversation-routes)
-- [Message Routes](#message-routes)
-- [Post Routes](#post-routes)
-- [Comment Routes](#comment-routes)
+- [Overview](#overview)
+- [Features](#features)
+- [Technologies Used](#technologies-used)
+- [Getting Started](#getting-started)
+- [Folder Structure](#folder-structure)
+- [API Documentation](#api-documentation)
+  - [User Routes](#user-routes)
+  - [Conversation Routes](#conversation-routes)
+  - [Message Routes](#message-routes)
+  - [Post Routes](#post-routes)
+  - [Comment Routes](#comment-routes)
+- [Contributing](#contributing)
+- [License](#license)
 
 ---
 
-## User Routes
+## Overview
 
-### **Register User**
+LegalWise is a platform that combines community-driven discussions with AI-powered chatbot assistance to address legal queries. It allows users to create and participate in conversations, post questions in the community, and receive AI-generated responses to their queries.
+
+---
+
+## Features
+
+- **User Authentication**: Secure user registration, login, and logout.
+- **Community Posts**: Create, browse, and interact with community posts.
+- **Conversations**: Start and manage conversations with other users.
+- **AI Chatbot**: Get AI-powered responses to legal queries.
+- **Dark Mode**: Toggle between light and dark themes for better accessibility.
+
+---
+
+## Technologies Used
+
+- **Frontend**: React, Redux, TailwindCSS
+- **Backend**: Node.js, Express.js, MongoDB
+- **Authentication**: JWT (JSON Web Tokens)
+- **AI Integration**: Google Generative AI (Gemini API)
+- **State Management**: Redux Toolkit
+- **Styling**: TailwindCSS
+- **API Testing**: Postman
+
+---
+
+## Getting Started
+
+### Prerequisites
+- Node.js (v16 or higher)
+- MongoDB
+- Redis (for session management)
+
+### Installation
+1. Clone the repository:
+    ```bash
+    git clone https://github.com/vishwanathhatti/LegalWise.git
+    ```
+2. Navigate to the project directory:
+    ```bash
+    cd LegalWise
+    ```
+3. Install dependencies for both frontend and backend:
+    ```bash
+    cd frontend && npm install
+    cd ../backend && npm install
+    ```
+4. Set up environment variables:
+    - Create a `.env` file in the `backend` folder with the following:
+        ```
+        PORT=5000
+        MONGO_URI=your_mongodb_connection_string
+        SECRET_KEY=your_jwt_secret
+        GEMINI_API_KEY=your_google_generative_ai_key
+        REDIS_URL=your_redis_connection_string
+        ```
+5. Start the development servers:
+    - Backend:
+        ```bash
+        cd backend && npm run dev
+        ```
+    - Frontend:
+        ```bash
+        cd frontend && npm run dev
+        ```
+
+---
+
+## Folder Structure
+
+```
+LegalWise/
+├── backend/
+│   ├── controllers/
+│   ├── middlewares/
+│   ├── models/
+│   ├── routes/
+│   ├── utils/
+│   └── index.js
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   ├── hooks/
+│   │   ├── pages/
+│   │   ├── redux/
+│   │   └── App.jsx
+│   └── vite.config.js
+└── Readme.md
+```
+
+---
+
+## API Documentation
+
+### User Routes
+
+#### **Register User**
 - **Endpoint**: `POST /api/user/register`
 - **Description**: Registers a new user.
 - **Request Body**:
@@ -33,16 +136,14 @@ This document provides an overview of the API endpoints available in the LegalWi
     - **400**: Missing fields or user already exists.
     - **500**: Internal server error.
 
-### **Login**
+#### **Login**
 - **Endpoint**: `POST /api/user/login`
 - **Description**: Logs in a user.
 - **Request Body**:
     ```json
     {
         "email": "john.doe@example.com",
-        "password": "password123",
-        "deviceId": "device123",
-        "deviceInfo": "Browser Info"
+        "password": "password123"
     }
     ```
 - **Response**:
@@ -50,21 +151,11 @@ This document provides an overview of the API endpoints available in the LegalWi
     - **400**: Invalid credentials or missing fields.
     - **500**: Internal server error.
 
-### **Logout**
-- **Endpoint**: `GET /api/user/logout`
-- **Description**: Logs out a user.
-- **Headers**:
-    - `Authorization`: Bearer token
-- **Response**:
-    - **200**: Logout successful.
-    - **400**: Missing userId or deviceId.
-    - **500**: Internal server error.
-
 ---
 
-## Conversation Routes
+### Conversation Routes
 
-### **Create Conversation**
+#### **Create Conversation**
 - **Endpoint**: `POST /api/conversation/create`
 - **Description**: Creates a new conversation.
 - **Request Body**:
@@ -80,7 +171,7 @@ This document provides an overview of the API endpoints available in the LegalWi
     - **400**: Missing fields or userId.
     - **500**: Internal server error.
 
-### **Get User Conversations**
+#### **Get User Conversations**
 - **Endpoint**: `GET /api/conversation/get`
 - **Description**: Retrieves all conversations for a user.
 - **Headers**:
@@ -92,9 +183,9 @@ This document provides an overview of the API endpoints available in the LegalWi
 
 ---
 
-## Message Routes
+### Message Routes
 
-### **Add Message**
+#### **Add Message**
 - **Endpoint**: `POST /api/conversation/:id`
 - **Description**: Adds a message to a conversation.
 - **Request Body**:
@@ -112,9 +203,9 @@ This document provides an overview of the API endpoints available in the LegalWi
 
 ---
 
-## Post Routes
+### Post Routes
 
-### **Create Post**
+#### **Create Post**
 - **Endpoint**: `POST /api/community/post`
 - **Description**: Creates a new post.
 - **Request Body**:
@@ -131,7 +222,7 @@ This document provides an overview of the API endpoints available in the LegalWi
     - **400**: Missing fields or userId.
     - **500**: Internal server error.
 
-### **Get All Posts**
+#### **Get All Posts**
 - **Endpoint**: `GET /api/community/post`
 - **Description**: Retrieves all posts.
 - **Headers**:
@@ -142,9 +233,9 @@ This document provides an overview of the API endpoints available in the LegalWi
 
 ---
 
-## Comment Routes
+### Comment Routes
 
-### **Add Comment**
+#### **Add Comment**
 - **Endpoint**: `POST /api/community/comments/add-comment/:id`
 - **Description**: Adds a comment to a post.
 - **Request Body**:
@@ -160,23 +251,21 @@ This document provides an overview of the API endpoints available in the LegalWi
     - **400**: Missing fields or userId.
     - **500**: Internal server error.
 
-### **Get Post Comments**
-- **Endpoint**: `GET /api/community/comments/:id`
-- **Description**: Retrieves comments for a specific post.
-- **Headers**:
-    - `Authorization`: Bearer token
-- **Response**:
-    - **200**: List of comments.
-    - **404**: Post not found.
-    - **500**: Internal server error.
+---
+
+## Contributing
+
+We welcome contributions! Please follow these steps:
+1. Fork the repository.
+2. Create a new branch for your feature or bug fix.
+3. Commit your changes and push them to your fork.
+4. Submit a pull request.
 
 ---
 
-## Status Codes
-- **200**: Success
-- **201**: Resource created
-- **400**: Bad request
-- **401**: Unauthorized
-- **403**: Forbidden
-- **404**: Not found
-- **500**: Internal server error
+
+---
+
+## Contact
+
+For questions or support, please contact [vhatti14@gmail.com](mailto:vhatti14@gmail.com).

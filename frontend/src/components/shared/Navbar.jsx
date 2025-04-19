@@ -52,6 +52,19 @@ const Navbar = () => {
                 <DropdownMenuItem asChild>
                     <Link to="/dashboard">Dashboard</Link>
                   </DropdownMenuItem>
+
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link to="/chat">Chatbot</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link to="/community/browse">Community</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
                     <Link to="/profile">Profile Settings</Link>
