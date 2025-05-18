@@ -18,7 +18,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 const corsOption={
-    origin:'https://darling-piroshki-2ac239.netlify.app',
+    origin:'http://localhost:5173',
     credentials:true,
 }
 app.use(cors(corsOption));
